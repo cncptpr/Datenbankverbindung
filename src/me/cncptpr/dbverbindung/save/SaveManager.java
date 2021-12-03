@@ -22,6 +22,10 @@ public class SaveManager {
     }
 
     public Object get(String key) {
+        if (map == null) {
+            System.out.println("Map empty");
+            load();
+        }
         return map.get(key);
     }
 
@@ -34,7 +38,7 @@ public class SaveManager {
     }
 
     private void load() {
-        map = gson.fromJson(file.read(), HashMap.class);
-    }
+         map = gson.fromJson(file.read(), HashMap.class);
+      }
 
 }

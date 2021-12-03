@@ -14,6 +14,7 @@ public class SaveFile {
     private final Path path;
     private final File file;
     private Runnable listener;
+    private int ignoreChange = 0;
 
     public SaveFile(String pathText, Runnable listener) {
         this.pathText = pathText;
@@ -47,6 +48,7 @@ public class SaveFile {
             System.out.println(ConsoleColors.ANSI_GREEN + "Writing");
             PrintWriter writer = new PrintWriter(file);
             writer.print(text);
+            ignoreChange += 2;
             writer.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -67,7 +69,12 @@ public class SaveFile {
                     for (WatchEvent<?> event : watchKey.pollEvents()) {
                         File file = ((Path) event.context()).toFile();
                         if (file.equals(new File(pathText))) {
-                            onUpdate();
+                            if(ignoreChange > 0) {
+                                ignoreChange--;
+                            } else {
+                                onUpdate();
+                                ignoreChange++;
+                            }
                         }
                     }
                 }

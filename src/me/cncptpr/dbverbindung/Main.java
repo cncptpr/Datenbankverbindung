@@ -40,7 +40,7 @@ public class Main {
     }
 
     public static void onLogout() {
-
+        LoginHandler.showLoginPanel(window);
     }
 
     public static void toArray(ResultSet tables) {
