@@ -1,6 +1,6 @@
 package me.cncptpr.dbverbindung.listenersAndEvents;
 
-import me.cncptpr.dbverbindung.Setting;
+import me.cncptpr.dbverbindung.Main;
 
 import java.util.ArrayList;
 
@@ -19,7 +19,7 @@ public class LoginEvent {
 
     public static void callLoginListeners() {
         for (LoginListener l : loginListeners)
-            callLoginListenerInNewThread(new LoginEvent(Setting.getString("username"), Setting.getString("database_login"), Setting.getString("id")), l);
+            callLoginListenerInNewThread(new LoginEvent(Main.settings.getString("username"), Main.settings.getString("database_login"), Main.settings.getString("id")), l);
     }
 
     public static void callLoginListeners(String username, String database, String id) {

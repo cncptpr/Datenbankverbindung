@@ -1,7 +1,7 @@
 package me.cncptpr.dbverbindung.dbconnection;
 
 
-import me.cncptpr.dbverbindung.Setting;
+import me.cncptpr.dbverbindung.Main;
 import me.cncptpr.dbverbindung.consol.ConsoleColors;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,10 +35,10 @@ public class DBConnection {
     }
 
     private static Connection connect() throws SQLException {
-        String ip = Setting.getString("ip");
-        String database = Setting.getString("database_current");
-        String username = Setting.getString("username");
-        String password = Setting.getString("password");
+        String ip = Main.settings.getString("ip");
+        String database = Main.settings.getString("database_current");
+        String username = Main.settings.getString("username");
+        String password = Main.settings.getString("password");
         String url = String.format("jdbc:mysql://%s/%s?user=%s&password=&%s", ip, database, username, password);
         return DriverManager.getConnection(url);
     }
@@ -71,7 +71,7 @@ public class DBConnection {
     }
 
     public static boolean canConnect() {
-        return tryConnect() != null;
+        return getTempConnection() != null;
     }
 }
 
