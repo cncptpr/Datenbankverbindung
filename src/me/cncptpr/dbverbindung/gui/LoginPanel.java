@@ -22,8 +22,8 @@ public class LoginPanel {
         databaseTextField.addActionListener(e -> ipTextField.grabFocus());
         ipTextField.addActionListener(LoginHandler::OnLoginClicked);
         usernameTextField.grabFocus();
-
     }
+
     public Container getMainPanel() {
         return mainPanel;
     }

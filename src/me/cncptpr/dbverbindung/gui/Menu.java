@@ -2,7 +2,6 @@ package me.cncptpr.dbverbindung.gui;
 
 import me.cncptpr.dbverbindung.Main;
 import me.cncptpr.dbverbindung.handler.SQLHandler;
-import me.cncptpr.dbverbindung.Setting;
 import me.cncptpr.dbverbindung.dbconnection.DBConnection;
 import me.cncptpr.dbverbindung.listenersAndEvents.TabEvent;
 import me.cncptpr.dbverbindung.listenersAndEvents.TabListener;
@@ -72,7 +71,7 @@ public class Menu {
         for(String database : DBConnection.tryGetAllDatabases()) {
             DBChooser_DropDown.addItem(database);
         }
-        DBChooser_DropDown.setSelectedItem(Setting.getString("database_current"));
+        DBChooser_DropDown.setSelectedItem(Main.settings.getString("database_current"));
         DBChooser_DropDown.addActionListener(e -> Main.onChangeDatabase());
         DBChooser_LogoutButton.addActionListener(e -> Main.onLogout());
 

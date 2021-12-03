@@ -1,7 +1,6 @@
 package me.cncptpr.dbverbindung.handler;
 
 import me.cncptpr.dbverbindung.Main;
-import me.cncptpr.dbverbindung.Setting;
 import me.cncptpr.dbverbindung.dbconnection.DBConnection;
 import me.cncptpr.dbverbindung.gui.Menu;
 import me.cncptpr.dbverbindung.listenersAndEvents.TabEvent;
@@ -138,9 +137,9 @@ public class InfoHandler {
     }
 
     private boolean isSameDatabaseAsBefore() {
-        if(Setting.getString("database_current").equals(lastDatabase))
+        if(Main.settings.getString("database_current").equals(lastDatabase))
             return true;
-        lastDatabase = Setting.getString("database_current");
+        lastDatabase = Main.settings.getString("database_current");
         return false;
     }
 
