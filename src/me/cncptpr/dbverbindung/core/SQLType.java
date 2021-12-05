@@ -1,4 +1,4 @@
-package me.cncptpr.dbverbindung;
+package me.cncptpr.dbverbindung.core;
 
 public enum SQLType {
 

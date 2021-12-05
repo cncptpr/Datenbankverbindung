@@ -1,6 +1,6 @@
 package me.cncptpr.dbverbindung.core.handler;
 
-import me.cncptpr.dbverbindung.SQLType;
+import me.cncptpr.dbverbindung.core.SQLType;
 import me.cncptpr.dbverbindung.core.ResultTable;
 import me.cncptpr.dbverbindung.core.dbconnection.DBConnection;
 
