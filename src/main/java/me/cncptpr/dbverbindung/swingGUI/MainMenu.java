@@ -63,8 +63,8 @@ public class MainMenu {
     public MainMenu() {
 
         //=========================================== register to listeners ==========================================//
-        SQL_EDIT_EVENT.register(sql -> editSQL(sql));
-        SQL_RUN_EVENT.register(e -> showSQL(e));
+        SQL_EDIT_EVENT.register(this::editSQL);
+        SQL_RUN_EVENT.register(this::showSQL);
 
         //================================================= Run SQL ==================================================//
         SQLResult_SendButton.addActionListener(e -> SQLHandler.tryRunSQL(SQLResult_Input.getText()));
@@ -101,21 +101,11 @@ public class MainMenu {
     public void update() {
         int tab = Menu_TabbedPane.getSelectedIndex();
         switch (tab) {
-            case SQLResult_Index:
-                updateSQLResult();
-                break;
-            case SQLEditor_Index:
-                updateSQLEditor();
-                break;
-            case History_Index:
-                updateHistory();
-                break;
-            case Info_Index:
-                updateInfo();
-                break;
-            case DBChooser_Index:
-                updateDBChooser();
-                break;
+            case SQLResult_Index -> updateSQLResult();
+            case SQLEditor_Index -> updateSQLEditor();
+            case History_Index -> updateHistory();
+            case Info_Index -> updateInfo();
+            case DBChooser_Index -> updateDBChooser();
         }
     }
 
@@ -197,6 +187,7 @@ public class MainMenu {
         changeTab(0);
         Console.test("Showing SQL");
         ResultTable result = e.resultTable();
+        SQLResult_Input.setText(result.originalSQL().replaceAll("\n", " "));
         SQLResult_Table.setModel(new DefaultTableModel(result.content(), result.titles()));
     }
 
