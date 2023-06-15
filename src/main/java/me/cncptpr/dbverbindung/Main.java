@@ -4,8 +4,6 @@ import me.cncptpr.dbverbindung.swingGUI.Window;
 import me.cncptpr.dbverbindung.core.handler.LoginHandler;
 import me.cncptpr.dbverbindung.core.save.SaveManager;
 
-import java.sql.ResultSet;
-
 public class Main {
 
     private static Window window;
@@ -20,12 +18,5 @@ public class Main {
 
     public static Window getWindow() {
         return window;
-    }
-
-    public static void onLogout() {
-        // TODO: 03.12.2021 Add logout to window
-    }
-
-    public static void toArray(ResultSet tables) {
     }
 }

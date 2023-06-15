@@ -10,7 +10,6 @@ import me.cncptpr.dbverbindung.core.events.sqlRunEvent.SQLRunEvent;
 import me.cncptpr.dbverbindung.core.handler.HistoryHandler;
 import me.cncptpr.dbverbindung.core.handler.InfoHandler;
 import me.cncptpr.dbverbindung.core.handler.SQLHandler;
-import org.intellij.lang.annotations.MagicConstant;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -178,10 +177,6 @@ public class MainMenu {
     }
 
 
-
-    public void runSQL(String sql) {
-        SQLHandler.tryRunSQL(sql);
-    }
 
     public void showSQL(SQLRunEvent e) {
         changeTab(0);

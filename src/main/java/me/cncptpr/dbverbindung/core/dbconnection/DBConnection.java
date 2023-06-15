@@ -3,7 +3,6 @@ package me.cncptpr.dbverbindung.core.dbconnection;
 
 import me.cncptpr.dbverbindung.Main;
 import me.cncptpr.dbverbindung.console.Console;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Timer;
 import java.sql.DriverManager;
@@ -28,8 +27,8 @@ public class DBConnection {
             return connect();
         } catch (NoSuchElementException e) {
             System.out.println(Console.RED + "[Error] Not all information for login provided.");
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
         return null;
     }
@@ -43,7 +42,7 @@ public class DBConnection {
         return DriverManager.getConnection(url);
     }
 
-    private static void close(@Nullable Connection connection) {
+    private static void close(Connection connection) {
         try {
             connection.close();
         } catch (Exception ignore) {
