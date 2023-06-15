@@ -38,8 +38,9 @@ public class DBConnection {
         String database = Main.SETTINGS.getString("database_current");
         String username = Main.SETTINGS.getString("username");
         String password = Main.SETTINGS.getString("password");
-        String url = String.format("jdbc:mysql://%s/%s?user=%s&password=&%s", ip, database, username, password);
-        return DriverManager.getConnection(url);
+        //String url = String.format("jdbc:mysql://%s/%s?user=%s&password=&%s", ip, database, username, password);
+        String url = String.format("jdbc:mysql://%s/%s", ip, database);
+        return DriverManager.getConnection(url, username, password);
     }
 
     private static void close(Connection connection) {
