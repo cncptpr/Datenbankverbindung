@@ -5,6 +5,9 @@ import me.cncptpr.dbverbindung.core.HistoryEntrance;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.cncptpr.dbverbindung.core.events.EventHandlers.SQL_ERROR_EVENT;
+import static me.cncptpr.dbverbindung.core.events.EventHandlers.SQL_RUN_EVENT;
+
 public class HistoryHandler {
 
     private static final List<HistoryEntrance> items = new ArrayList<>();
@@ -12,60 +15,27 @@ public class HistoryHandler {
 
     private HistoryHandler() {}
 
-    public static List<HistoryEntrance> getItems() {
-        return items;
+    public static void add(HistoryEntrance entrance) {
+        items.add(entrance);
     }
 
-    public static void addNewSQL(String sql) {
-        remove(sql);
-        items.add(new HistoryEntrance(sql));
+    public static void add(String sql) {
+        add(new HistoryEntrance(sql));
+    }
+    private static void add(String sql, String error) {
+        add(new HistoryEntrance(sql, error));
     }
 
-    public static void priorities(HistoryEntrance historyEntrance) {
-        historyEntrance.prioritise();
+    public static String render() {
+        StringBuilder builder = new StringBuilder();
+        for (HistoryEntrance entrance : items) {
+            builder.append(entrance.render());
+        }
+        return builder.toString();
     }
 
-    public static void unpriorities(HistoryEntrance historyEntrance) {
-        historyEntrance.unprioritise();
+    public static void init() {
+        SQL_RUN_EVENT.register(event -> add(event.sql()));
+        SQL_ERROR_EVENT.register(event -> add(event.sql(), event.error()));
     }
-
-    public static boolean remove(HistoryEntrance historyEntrance) {
-        return removeFromList(historyEntrance);
-    }
-
-    public static boolean removeFromList(HistoryEntrance historyEntrance) {
-        return items.remove(historyEntrance);
-    }
-
-    public static boolean remove(String sql) {
-        boolean removed = false;
-        for (int i = 0; i < items.size(); i++)
-            if (items.get(i).matchesSql(sql))
-                removed = items.remove(items.get(i));
-        return removed;
-    }
-
-/*
-    public static void update() {
-        historyPanel.removeAll();
-        historyPanel.setLayout(new GridLayout(getGridRowCount(), 2, 20, 20));
-        items.forEach(historyEntrance -> historyPanel.add(historyEntrance.getHistoryPanel().getMainPanel()));
-        prioritisedItems.forEach(historyEntrance -> historyPanel.add(historyEntrance.getHistoryPanel().getMainPanel()));
-        historyPanel.repaint();
-    }
-
-    private static int getGridRowCount() {
-        int r = items.size() + prioritisedItems.size();
-        if (r%2 != 0)
-            r++;
-
-        return r/2;
-    }
-
-
-    public static JPanel getHistoryPanel() {
-        return historyPanel;
-    }
-
- */
 }

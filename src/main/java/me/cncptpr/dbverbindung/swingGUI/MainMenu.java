@@ -2,7 +2,6 @@ package me.cncptpr.dbverbindung.swingGUI;
 
 import me.cncptpr.console.Console;
 import me.cncptpr.dbverbindung.core.ColumnInfo;
-import me.cncptpr.dbverbindung.core.HistoryEntrance;
 import me.cncptpr.dbverbindung.core.ResultTable;
 import me.cncptpr.dbverbindung.core.TableInfo;
 import me.cncptpr.dbverbindung.core.dbconnection.DBConnection;
@@ -58,7 +57,7 @@ public class MainMenu {
     //History
     public static final int History_Index = 2;
     public JScrollPane History_ScrollPane;
-    public JPanel History_Panel = new JPanel();
+    private final JTextArea History_TextArea = new JTextArea();
 
     public MainMenu() {
 
@@ -67,9 +66,9 @@ public class MainMenu {
         SQL_RUN_EVENT.register(this::showSQL);
 
         //================================================= Run SQL ==================================================//
-        SQLResult_SendButton.addActionListener(e -> SQLHandler.tryRunSQL(SQLResult_Input.getText()));
-        SQLEditor_SendButton.addActionListener(e -> SQLHandler.tryRunSQL(SQLEditor_Input.getText()));
-        SQLResult_Input.addActionListener(e -> SQLHandler.tryRunSQL(SQLResult_Input.getText()));
+        SQLResult_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText()));
+        SQLEditor_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLEditor_Input.getText()));
+        SQLResult_Input.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText()));
 
 
         //========================================= Fill DBChooser Drop Down =========================================//
@@ -92,8 +91,9 @@ public class MainMenu {
 
         Menu_TabbedPane.addChangeListener(this::tabChanged);
 
-        History_Panel.setLayout(new BoxLayout(History_Panel, BoxLayout.PAGE_AXIS));
-        History_ScrollPane.setViewportView(History_Panel);
+        HistoryHandler.init();
+        History_TextArea.setEditable(false);
+        History_ScrollPane.setViewportView(History_TextArea);
 
         changeTab(DBChooser_Index);
     }
@@ -123,15 +123,7 @@ public class MainMenu {
     }
 
     private void updateHistory() {
-        History_Panel.removeAll();
-        for (HistoryEntrance item : HistoryHandler.getItems()) {
-            if(item.isPrioritised())
-                History_Panel.add(new HistoryPanel(item).getMainPanel());
-        }
-        for (HistoryEntrance item : HistoryHandler.getItems()) {
-            if(!item.isPrioritised())
-                History_Panel.add(new HistoryPanel(item).getMainPanel());
-        }
+        History_TextArea.setText(HistoryHandler.render());
     }
 
     private void updateInfo() {
@@ -207,6 +199,4 @@ public class MainMenu {
             });
         return label;
     }
-
-
 }

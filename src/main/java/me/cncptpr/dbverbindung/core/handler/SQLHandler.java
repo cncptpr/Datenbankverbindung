@@ -10,6 +10,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import static me.cncptpr.dbverbindung.core.events.EventHandlers.SQL_ERROR_EVENT;
 import static me.cncptpr.dbverbindung.core.events.EventHandlers.SQL_RUN_EVENT;
 
 public class SQLHandler {
@@ -18,18 +19,13 @@ public class SQLHandler {
 
     }
 
-    public static void tryRunSQL(String sql) {
+    public static void runSQL(String sql) {
         try {
-            runSQL(sql);
+            ResultTable resultTable = executeSQL(sql);
+            SQL_RUN_EVENT.callAllListeners(sql, resultTable);
         } catch (SQLException e) {
-            e.printStackTrace();
+            SQL_ERROR_EVENT.callAllListeners(sql, e.getMessage());
         }
-    }
-
-    public static void runSQL(String sql) throws SQLException {
-        ResultTable resultTable = executeSQL(sql);
-        HistoryHandler.addNewSQL(sql);
-        SQL_RUN_EVENT.callAllListeners(resultTable);
     }
 
     private static ResultTable executeSQL(String sql) throws SQLException {

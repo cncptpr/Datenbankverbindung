@@ -1,75 +1,29 @@
 package me.cncptpr.dbverbindung.core;
 
-public class HistoryEntrance {
+public record HistoryEntrance (String sql, String error){
 
-    private final String sql;
-    private boolean prioritised = false;
+    private static final String NEW_LINE = "\n";
 
     public HistoryEntrance(String sql) {
-        this(sql, false);
+        this(sql, null);
     }
 
-    public HistoryEntrance(String sql, boolean prioritised) {
-        this.sql = sql;
-        this.prioritised = prioritised;
+    public String render() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(sql)
+                .append(NEW_LINE)
+                .append("------------")
+                .append(NEW_LINE);
+        if (error == null) {
+            builder.append("Erfolgreich ausgeführt!");
+        } else {
+            builder.append("Fehler: ")
+                    .append(error);
+        }
+        builder.append(NEW_LINE)
+                .append("=================")
+                .append(NEW_LINE)
+                .append(NEW_LINE);
+        return builder.toString();
     }
-
-    public void prioritise() {
-        prioritised = true;
-    }
-
-    public void prioritise(boolean prioritised) {
-        this.prioritised = prioritised;
-    }
-
-    public void unprioritise() {
-        prioritised = false;
-    }
-
-    public String getSql() {
-        return sql;
-    }
-
-    public boolean isPrioritised() {
-        return prioritised;
-    }
-
-    public boolean matchesSql(String sql) {
-        return sql.equalsIgnoreCase(this.sql);
-    }
-
-    /*
-    public void onExecute(ActionEvent e) {
-        SQLHandler.tryRunSQL(sql);
-    }
-
-    public void onEdit(ActionEvent e) {
-        EventHandlers.SQL_EDIT.call(sql);
-        Menu.getInstance().SQLEditor_Input.setText(sql);
-        Menu.getInstance().changeTab(Menu.SQLEditor_Index);
-    }
-
-    public void onRemove(ActionEvent e) {
-        HistoryHandler.remove(this);
-        HistoryHandler.update();
-    }
-
-    public void onPrioritise(ActionEvent e) {
-        if (prioritised)
-            HistoryHandler.unpriorities(this);
-        else
-            HistoryHandler.priorities(this);
-        prioritised = !prioritised;
-        HistoryHandler.update();
-    }
-
-    public HistoryPanel getHistoryPanel() {
-        return historyPanel;
-    }
-
-    public boolean matchesSql(String sql){
-        return this.sql.equalsIgnoreCase(sql);
-    }
-
-     */
 }
