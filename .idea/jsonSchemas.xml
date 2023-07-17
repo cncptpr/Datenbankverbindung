@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="IntelliJ Theme Metadata">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="IntelliJ Theme Metadata" />
+              <option name="relativePathToSchema" value="../../../../../../../../../Program Files/JetBrains/IntelliJ IDEA Community Edition 2020.2.4/plugins/devkit/lib/devkit.jar!/schemes/themeMetadata.schema.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="settings.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>
