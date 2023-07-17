@@ -1,6 +1,6 @@
 package me.cncptpr.dbverbindung.swingGUI;
 
-import me.cncptpr.dbverbindung.console.Console;
+import me.cncptpr.console.Console;
 import me.cncptpr.dbverbindung.core.ColumnInfo;
 import me.cncptpr.dbverbindung.core.HistoryEntrance;
 import me.cncptpr.dbverbindung.core.ResultTable;
@@ -18,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 
 import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
 
@@ -73,14 +74,18 @@ public class MainMenu {
 
         //========================================= Fill DBChooser Drop Down =========================================//
         DBChooser_DropDown.removeAllItems();
-        for(String database : DBConnection.tryGetAllDatabases()) {
-            DBChooser_DropDown.addItem(database);
+        try (DBConnection connection = new DBConnection()) {
+            for (String database : connection.getAllDatabases()) {
+                DBChooser_DropDown.addItem(database);
+            }
+            DBChooser_DropDown.setSelectedItem(SETTINGS.getString("database_current"));
+            DBChooser_DropDown.addActionListener(e -> {
+                SETTINGS.set("database_current", DBChooser_DropDown.getSelectedItem());
+                changeTab(SQLEditor_Index);
+            });
+        } catch (SQLException e) {
+            Console.error(e);
         }
-        DBChooser_DropDown.setSelectedItem(SETTINGS.getString("database_current"));
-        DBChooser_DropDown.addActionListener(e -> {
-            SETTINGS.set("database_current", DBChooser_DropDown.getSelectedItem());
-            changeTab(SQLEditor_Index);
-        });
 
         //============================================== Logout Listener =============================================//
         DBChooser_LogoutButton.addActionListener(e -> LOGOUT_EVENT.call());

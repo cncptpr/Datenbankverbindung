@@ -27,12 +27,12 @@ public class SQLHandler {
     }
 
     public static void runSQL(String sql) throws SQLException {
-        ResultSet resultSet = executeSQL(sql);
+        ResultTable resultTable = executeSQL(sql);
         HistoryHandler.addNewSQL(sql);
-        SQL_RUN_EVENT.callAllListeners(convertToResultTable(resultSet, sql));
+        SQL_RUN_EVENT.callAllListeners(resultTable);
     }
 
-    private static ResultSet executeSQL(String sql) throws SQLException {
+    private static ResultTable executeSQL(String sql) throws SQLException {
         SQLType type = SQLType.getType(sql);
         if (type.equals(SQLType.SELECT))
             return executeSQLSelect(sql);
@@ -46,15 +46,22 @@ public class SQLHandler {
         return new ResultTable(titles, content, SQLType.getType(sql), sql, getSelectSQL(sql));
     }
 
-    public static ResultSet executeSQLSelect(String sql) throws SQLException {
-        PreparedStatement statement = DBConnection.getTempConnection().prepareStatement(getSelectSQL(sql));
+    public static ResultTable executeSQLSelect(String sql) throws SQLException {
+        DBConnection connection = new DBConnection();
+        PreparedStatement statement = connection.prepareStatement(getSelectSQL(sql));
         ResultSet resultSet = statement.executeQuery();
-        return resultSet;
+        ResultTable resultTable = convertToResultTable(resultSet, sql);
+        connection.close();
+        return resultTable;
+ //       return (ResultSet) DBConnection.connect_scope(connection -> connection.prepareStatement(getSelectSQL(sql)).executeQuery());
     }
 
-    private static ResultSet executeSQLUpdate(String sql) throws SQLException {
+    private static ResultTable executeSQLUpdate(String sql) throws SQLException {
         if(!isBadSQL(sql)) {
-            DBConnection.getTempConnection().prepareStatement(sql).executeUpdate();
+            DBConnection connection = new DBConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.executeUpdate();
+            connection.close();
         }
         return executeSQLSelect(sql);
     }
@@ -110,5 +117,12 @@ public class SQLHandler {
         }
 
         return content.toArray(new String[0][0]);
+    }
+
+    public static ResultSetMetaData getTableMetaData(String table) throws SQLException {
+        DBConnection connection = new DBConnection();
+        ResultSetMetaData metaData = connection.prepareStatement("SELECT * FROM " + table).getMetaData();
+        connection.close();
+        return metaData;
     }
 }

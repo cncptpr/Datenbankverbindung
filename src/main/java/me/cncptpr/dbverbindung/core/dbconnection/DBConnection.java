@@ -2,63 +2,44 @@ package me.cncptpr.dbverbindung.core.dbconnection;
 
 
 import me.cncptpr.dbverbindung.Main;
-import me.cncptpr.dbverbindung.console.Console;
+import me.cncptpr.dbverbindung.core.save.SaveManager;
 
-import javax.swing.Timer;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 
-public class DBConnection {
+public class DBConnection implements AutoCloseable {
 
-    private static String[] allDatabases = null;
-
-    public static Connection getTempConnection() {
-        Connection connection = tryConnect();
-        new Timer(100, e -> close(connection));
-        return connection;
-    }
-
-    private static Connection tryConnect() {
-        try {
-            return connect();
-        } catch (NoSuchElementException e) {
-            System.out.println(Console.RED + "[Error] Not all information for login provided.");
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+    public static boolean canConnect() {
+        try (DBConnection ignored = new DBConnection()){
+            return true;
+        } catch (SQLException e) {
+            return false;
         }
-        return null;
     }
 
-    private static Connection connect() throws SQLException {
+    private final Connection connection;
 
-        String ip = Main.SETTINGS.getString("ip");
-        String database = Main.SETTINGS.getString("database_current");
-        String username = Main.SETTINGS.getString("username");
-        String password = Main.SETTINGS.getString("password");
-        //String url = String.format("jdbc:mysql://%s/%s?user=%s&password=&%s", ip, database, username, password);
-        String url = String.format("jdbc:mysql://%s/%s", ip, database);
-        return DriverManager.getConnection(url, username, password);
+    public DBConnection() throws SQLException {
+        Credentials credentials = Credentials.fromDefaultSettings();
+        String url = String.format("jdbc:mysql://%s/%s", credentials.ip, credentials.database);
+        connection = DriverManager.getConnection(url, credentials.username, credentials.password);
     }
 
-    private static void close(Connection connection) {
+    public void close() {
         try {
             connection.close();
-        } catch (Exception ignore) {
-
-        }
+        } catch (SQLException ignored) {}
     }
 
-    public static String[] tryGetAllDatabases() {
-        try {
-            allDatabases = getAllDatabases(getTempConnection());
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-        return allDatabases;
+    public DatabaseMetaData getMetaData() throws SQLException {
+        return connection.getMetaData();
     }
 
-    private static String[] getAllDatabases(Connection connection) throws SQLException {
+    public PreparedStatement prepareStatement(String sql) throws SQLException {
+        return connection.prepareStatement(sql);
+    }
+
+    public String[] getAllDatabases() throws SQLException {
         ResultSet result = connection.getMetaData().getCatalogs();
         ArrayList<String> databases = new ArrayList<>();
         while (result.next()) {
@@ -68,8 +49,14 @@ public class DBConnection {
         return databases.toArray(new String[0]);
     }
 
-    public static boolean canConnect() {
-        return getTempConnection() != null;
+    private record Credentials (String ip,String database,String username, String password) {
+
+        public static Credentials fromDefaultSettings () {
+            return fromSettings(Main.SETTINGS);
+        }
+        public static Credentials fromSettings (SaveManager settings) {
+            return new Credentials(settings.getString("ip"), settings.getString("database_current"), settings.getString("username"), settings.getString("password"));
+        }
     }
 }
 

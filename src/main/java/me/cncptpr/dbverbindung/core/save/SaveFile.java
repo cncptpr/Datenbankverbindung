@@ -1,6 +1,6 @@
 package me.cncptpr.dbverbindung.core.save;
 
-import me.cncptpr.dbverbindung.console.Console;
+import me.cncptpr.console.Console;
 
 import java.io.File;
 import java.io.FileNotFoundException;

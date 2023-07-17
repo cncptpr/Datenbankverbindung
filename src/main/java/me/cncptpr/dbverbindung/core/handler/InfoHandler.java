@@ -40,10 +40,10 @@ public class InfoHandler {
 
     public static TableInfo[] getInfo() {
         if (!isSameDatabaseAsBefore()) {
-            try {
+            try (DBConnection connection = new DBConnection()) {
                 List<TableInfo> tableInfos = new LinkedList<>();
 
-                ResultSet tables = DBConnection.getTempConnection().getMetaData().getTables(Main.SETTINGS.getString("database_current"), null, "%", null);
+                ResultSet tables = connection.getMetaData().getTables(Main.SETTINGS.getString("database_current"), null, "%", null);
                 String[] tableNames = getTableNames(tables);
 
                 for (String tableName : tableNames) {
@@ -52,7 +52,6 @@ public class InfoHandler {
                 }
 
                 lastInfo = tableInfos.toArray(new TableInfo[0]);
-
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -115,7 +114,7 @@ public class InfoHandler {
     }
 
     private static String[] getColumnsNames(String table) throws SQLException {
-        ResultSetMetaData metaData = getTableMetaData(table);
+        ResultSetMetaData metaData = SQLHandler.getTableMetaData(table);
         LinkedList<String> names = getColumnsNames(metaData);
         return names.toArray(new String[0]);
     }
@@ -126,11 +125,6 @@ public class InfoHandler {
             names.add(metaData.getColumnName(i));
         }
         return names;
-    }
-
-    private static ResultSetMetaData getTableMetaData(String table) throws SQLException {
-
-        return SQLHandler.executeSQLSelect("SELECT * FROM " + table).getMetaData();
     }
 
     private static boolean isSameDatabaseAsBefore() {
