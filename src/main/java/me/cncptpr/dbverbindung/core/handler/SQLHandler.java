@@ -4,12 +4,11 @@ import me.cncptpr.dbverbindung.core.SQLType;
 import me.cncptpr.dbverbindung.core.ResultTable;
 import me.cncptpr.dbverbindung.core.dbconnection.DBConnection;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import static me.cncptpr.dbverbindung.core.events.EventHandlers.SQL_RUN_EVENT;
 
@@ -48,7 +47,9 @@ public class SQLHandler {
     }
 
     public static ResultSet executeSQLSelect(String sql) throws SQLException {
-        return DBConnection.getTempConnection().prepareStatement(getSelectSQL(sql)).executeQuery();
+        PreparedStatement statement = DBConnection.getTempConnection().prepareStatement(getSelectSQL(sql));
+        ResultSet resultSet = statement.executeQuery();
+        return resultSet;
     }
 
     private static ResultSet executeSQLUpdate(String sql) throws SQLException {

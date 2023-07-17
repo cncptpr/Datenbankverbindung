@@ -5,10 +5,7 @@ import me.cncptpr.dbverbindung.Main;
 import me.cncptpr.dbverbindung.console.Console;
 
 import javax.swing.Timer;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Connection;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
@@ -34,6 +31,7 @@ public class DBConnection {
     }
 
     private static Connection connect() throws SQLException {
+
         String ip = Main.SETTINGS.getString("ip");
         String database = Main.SETTINGS.getString("database_current");
         String username = Main.SETTINGS.getString("username");
@@ -54,8 +52,8 @@ public class DBConnection {
     public static String[] tryGetAllDatabases() {
         try {
             allDatabases = getAllDatabases(getTempConnection());
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
         return allDatabases;
     }

@@ -43,11 +43,13 @@ public class InfoHandler {
             try {
                 List<TableInfo> tableInfos = new LinkedList<>();
 
-                ResultSet tables = DBConnection.getTempConnection().getMetaData().getTables(null, null, "%", null);
+                ResultSet tables = DBConnection.getTempConnection().getMetaData().getTables(Main.SETTINGS.getString("database_current"), null, "%", null);
                 String[] tableNames = getTableNames(tables);
 
-                for (String tableName : tableNames)
+                for (String tableName : tableNames) {
+                    System.out.println(tableName);
                     tableInfos.add(new TableInfo(tableName, ColumnInfo.toColumnInfo(getColumnsNames(tableName))));
+                }
 
                 lastInfo = tableInfos.toArray(new TableInfo[0]);
 
