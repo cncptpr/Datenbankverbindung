@@ -1,6 +1,7 @@
 package me.cncptpr.dbverbindung.swingGUI;
 
 import me.cncptpr.console.Console;
+import me.cncptpr.dbverbindung.Main;
 import me.cncptpr.dbverbindung.core.ColumnInfo;
 import me.cncptpr.dbverbindung.core.ResultTable;
 import me.cncptpr.dbverbindung.core.TableInfo;
@@ -16,8 +17,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 
 import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
@@ -171,19 +174,17 @@ public class MainMenu {
         columnPanel.setLayout(new BoxLayout(columnPanel, BoxLayout.PAGE_AXIS));
         columnPanel.setBorder(new EmptyBorder(5, 10, 5, 10));
 
-        boolean tableSelected = false;
-        for (TableInfo table : info){
-            tablePanel.add(generateLabel(table.name(), true));
-            if (table.name().equalsIgnoreCase(selectedTable)) {
-                tableSelected = true;
-                for (ColumnInfo columnInfo : table.columns()) {
-                    columnPanel.add(generateLabel(columnInfo.name(), false));
-                }
-            }
+        if (selectedTable == null) {
+            selectedTable = info[0].name();
         }
-        if (!tableSelected) {
-            for (ColumnInfo columnInfo : info[0].columns()) {
-                columnPanel.add(generateLabel(columnInfo.name(), false));
+
+        for (TableInfo table : info){
+            boolean tableSelected = table.name().equalsIgnoreCase(selectedTable);
+            tablePanel.add(generateTableLabel(table.name(), tableSelected));
+            if (tableSelected) {
+                for (ColumnInfo columnInfo : table.columns()) {
+                    columnPanel.add(generateColumnLabel(columnInfo.descriptor(), table.name() + "." + columnInfo.name()));
+                }
             }
         }
     }
@@ -218,7 +219,7 @@ public class MainMenu {
     }
 
     /**
-     * Displays an error, caused when executing a wrong sql statement, in the UI.
+     * Displays an error, caused when executing a wrong SQL statement, in the UI.
      */
     public void showSQLError(SQLErrorEvent e) {
         changeTab(Tab.SQLResult);
@@ -230,26 +231,91 @@ public class MainMenu {
     }
 
     /**
-     * Generates a label as found in the info tab.
-     * @param text the text of the label (the table or columns name)
-     * @param addListener Whether to add a mouse listener.
-     *                    The table labels require one to display their corresponding columns
-     * @return The generated label. It still needs to be added to the UI.
+     * Generates a label as found in the info tab to display the table information.
+     * Uses {@link #generateLabel(String, Runnable, ColorProvider, ColorProvider)} for generation.
+     * @param name The name of the table and the text displayed on the label.
+     * @param selected Whether this is the selected table,
+     *                 a.k.a the table of which the columns are being displayed.
+     * @return The generated label. Still needs to be added to the UI
      */
-    private JLabel generateLabel(String text, boolean addListener) {
+    public JLabel generateTableLabel(String name, boolean selected) {
+        return generateLabel(
+            name,
+            () -> {
+                selectedTable = name;
+                updateInfo();
+            },
+            () -> selected ? Color.BLUE : Color.DARK_GRAY,
+            () -> selected ? new Color(0, 0, 166) : Color.BLACK
+        );
+    }
+
+    /**
+     * Generates a label as found in the info tab to display the column information.
+     * Uses {@link #generateLabel(String, Runnable, ColorProvider, ColorProvider)} for generation.
+     * @param descriptor The text displayed on the label. It should give information about the column.
+     *                   Pattern: {@code "columnName (columnType)"}
+     * @param identifier The text being copied when clicking on the label.
+     *                   It should be a valid and unique identifier for the column to be used in a SQL query.
+     *                   Pattern: {@code "table.column"}
+     * @return The generated label. Still needs to be added to the UI
+     */
+    public JLabel generateColumnLabel(String descriptor, String identifier) {
+        return generateLabel(
+            descriptor,
+            () -> {
+                StringSelection selection = new StringSelection(identifier);
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
+            },
+            () -> Color.DARK_GRAY,
+            () -> Color.BLACK
+        );
+    }
+
+    /**
+     * Generates a label as found in the info tab.
+     * Usable for both the tables and the columns.
+     * For easier usage the helper methods {@link #generateTableLabel(String, boolean)}
+     * and {@link #generateColumnLabel(String, String)} are provided.
+     * @param text The displayed text.
+     * @param onClick An on click handler.
+     *                Used by the helper methods for selecting a table or copying of the columns' identifier.
+     * @param normalColor The normal color of the text.
+     *                    By not using the color class but instead supporting lambda expressions,
+     *                    different coloring of e.g. the selected table is easier.
+     * @param hoverColor The color of the Text when hovered over. Again supporting lambda expressions.
+     *                   Example Usage: {@code () -> isSelected ? highlightedColor : basicColor }
+     *                   or {@code () -> onlyOneColor}
+     * @return The generated label. Still needs to be added to the UI
+     */
+    public JLabel generateLabel(String text, Runnable onClick, ColorProvider normalColor, ColorProvider hoverColor) {
         JLabel label = new JLabel(text);
         label.setBorder(new EmptyBorder(0, 0, 5, 0));
         label.setFont(new Font(null, Font.BOLD, 15));
-        label.setBackground(new Color(165, 167, 172));
-        if (addListener)
-            label.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getButton() == MouseEvent.BUTTON1)
-                        selectedTable = text;
-                    updateInfo();
+        label.setForeground(normalColor.color());
+
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    onClick.run();
                 }
-            });
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                label.setForeground(hoverColor.color());
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                label.setForeground(normalColor.color());
+            }
+        });
         return label;
+    }
+
+    public interface ColorProvider {
+        Color color();
     }
 }

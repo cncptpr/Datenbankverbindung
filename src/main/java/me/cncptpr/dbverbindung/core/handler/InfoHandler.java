@@ -48,7 +48,7 @@ public class InfoHandler {
 
                 for (String tableName : tableNames) {
                     System.out.println(tableName);
-                    tableInfos.add(new TableInfo(tableName, ColumnInfo.toColumnInfo(getColumnsNames(tableName))));
+                    tableInfos.add(new TableInfo(tableName, getColumnInfos(tableName)));
                 }
 
                 lastInfo = tableInfos.toArray(new TableInfo[0]);
@@ -121,18 +121,32 @@ public class InfoHandler {
         }
     }
 
-    private static String[] getColumnsNames(String table) throws SQLException {
+    /**
+     * Retrieves the metadata and gets information about the columns of the table.
+     * See also {@link #getColumnsInfos(ResultSetMetaData)}
+     * @param table The name of the table to get the Information from
+     * @return An array with all the Information for each column
+     * @throws SQLException
+     */
+    private static ColumnInfo[] getColumnInfos(String table) throws SQLException {
         ResultSetMetaData metaData = SQLHandler.getTableMetaData(table);
-        LinkedList<String> names = getColumnsNames(metaData);
-        return names.toArray(new String[0]);
+        return getColumnsInfos(metaData);
     }
 
-    private static LinkedList<String> getColumnsNames(ResultSetMetaData metaData) throws SQLException {
-        LinkedList<String> names = new LinkedList<>();
+    /**
+     * Reads the information (column name and column type) out of the Table Metadata
+     * @param metaData The metadata of the table.
+     *                 Get it with the {@link SQLHandler#getTableMetaData(String)} method
+     *                 or use the {@link #getColumnInfos(String)} helper method.
+     * @return An array with all the Information for each column
+     * @throws SQLException
+     */
+    private static ColumnInfo[] getColumnsInfos(ResultSetMetaData metaData) throws SQLException {
+        LinkedList<ColumnInfo> names = new LinkedList<>();
         for ( int i = 1; i <= metaData.getColumnCount(); i++) {
-            names.add(metaData.getColumnName(i));
+            names.add(new ColumnInfo(metaData.getColumnName(i), metaData.getColumnType(i)));
         }
-        return names;
+        return names.toArray(new ColumnInfo[0]);
     }
 
     private static boolean isSameDatabaseAsBefore() {
