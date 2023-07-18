@@ -2,7 +2,7 @@ package me.cncptpr.dbverbindung.core.dbconnection;
 
 
 import me.cncptpr.dbverbindung.Main;
-import me.cncptpr.dbverbindung.core.save.SaveManager;
+import me.cncptpr.dbverbindung.core.save.Settings;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class DBConnection implements AutoCloseable {
         public static Credentials fromDefaultSettings () {
             return fromSettings(Main.SETTINGS);
         }
-        public static Credentials fromSettings (SaveManager settings) {
+        public static Credentials fromSettings (Settings settings) {
             return new Credentials(settings.getString("ip"), settings.getString("database_current"), settings.getString("username"), settings.getString("password"));
         }
     }

@@ -24,28 +24,54 @@ import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
 
 import static me.cncptpr.dbverbindung.Main.SETTINGS;
 
+
+/**
+ * The main menu is a tabbed panel where all the SQL is done.
+ * This class handles switching between tabs and handles all user input.
+ * Almost every action is triggered from this class.
+ * The results of these action get passed up from the core over events (The core doesn't know about the ui).
+ */
 public class MainMenu {
 
+    public  enum Tab {
+        SQLResult(0), SQLEditor(1), History(2), Info(3), DBChooser(4);
+        final int i;
+
+        static Tab from(int index) {
+            return switch (index) {
+                case 0 -> SQLResult;
+                case 1 -> SQLEditor;
+                case 2 -> History;
+                case 3 -> Info;
+                case 4 -> DBChooser;
+                default -> null;
+            };
+        }
+        Tab(int i)  {
+            this.i = i;
+        }
+
+        public int index() {
+            return i;
+        }
+    }
+
     //SQL Result
-    public static final int SQLResult_Index = 0;
     public JTextField SQLResult_Input;
     public JTable SQLResult_Table;
     public JButton SQLResult_SendButton;
 
     //SQL Editor
-    public static final int SQLEditor_Index = 1;
     public JPanel SQLEditor_history;
     public JTextArea SQLEditor_Input;
     public JButton SQLEditor_SendButton;
 
     //Info
-    public static final int Info_Index = 3;
     public JScrollPane Info_Tables;
     public JScrollPane Info_Columns;
     private String selectedTable;
 
     //Database Chooser
-    public static final int DBChooser_Index = 4;
     public JComboBox<String> DBChooser_DropDown;
     public JButton DBChooser_ChooseButton;
     public JButton DBChooser_LogoutButton;
@@ -56,7 +82,6 @@ public class MainMenu {
     public JPanel MainPanel;
 
     //History
-    public static final int History_Index = 2;
     public JScrollPane History_ScrollPane;
     private final JTextArea History_TextArea = new JTextArea();
 
@@ -82,7 +107,7 @@ public class MainMenu {
             DBChooser_DropDown.setSelectedItem(SETTINGS.getString("database_current"));
             DBChooser_DropDown.addActionListener(e -> {
                 SETTINGS.set("database_current", DBChooser_DropDown.getSelectedItem());
-                changeTab(SQLEditor_Index);
+                changeTab(Tab.SQLEditor);
             });
         } catch (SQLException e) {
             Console.error(e);
@@ -91,37 +116,41 @@ public class MainMenu {
         //============================================== Logout Listener =============================================//
         DBChooser_LogoutButton.addActionListener(e -> LOGOUT_EVENT.call());
 
+        //============================================== Tab Listener ================================================//
         Menu_TabbedPane.addChangeListener(this::tabChanged);
 
+        //============================================== Configure the History =======================================//
         HistoryHandler.init();
         History_TextArea.setEditable(false);
         History_ScrollPane.setViewportView(History_TextArea);
 
-        changeTab(DBChooser_Index);
+        //============================================== Initial Tab =================================================//
+        changeTab(Tab.SQLEditor);
     }
 
     private void tabChanged(ChangeEvent changeEvent) {
         update();
     }
 
+    /**
+     * Updates the contents of the main menu to the contents of the currently active tab.
+     */
     public void update() {
-        int tab = Menu_TabbedPane.getSelectedIndex();
-        switch (tab) {
-            case SQLResult_Index -> updateSQLResult();
-            case SQLEditor_Index -> updateSQLEditor();
-            case History_Index -> updateHistory();
-            case Info_Index -> updateInfo();
-            case DBChooser_Index -> updateDBChooser();
+        int index = Menu_TabbedPane.getSelectedIndex();
+        switch (Tab.from(index)) {
+            case SQLResult -> updateSQLResult();
+            case SQLEditor -> updateSQLEditor();
+            case History -> updateHistory();
+            case Info -> updateInfo();
+            case DBChooser -> updateDBChooser();
         }
     }
 
 
     private void updateSQLResult() {
-        // TODO: 05.12.2021 If empty run default select
     }
 
     private void updateSQLEditor() {
-
     }
 
     private void updateHistory() {
@@ -162,37 +191,51 @@ public class MainMenu {
     private void updateDBChooser() {
     }
 
+    /**
+     * Shows the SQL Editor with the SQL statement to edit
+     * @param sql the SQL being shown
+     */
     private void editSQL(String sql) {
         SQLEditor_Input.setText(sql);
-        changeTab(SQLEditor_Index);
+        changeTab(Tab.SQLEditor);
     }
 
-    public void changeTab(int i) {
-        Menu_TabbedPane.setSelectedIndex(i);
+    public void changeTab(Tab tab) {
+        Menu_TabbedPane.setSelectedIndex(tab.index());
     }
 
     public Container getMainPanel() {
         return MainPanel;
     }
 
-
-
     public void showSQL(SQLRunEvent e) {
-        changeTab(0);
-        Console.test("Showing SQL");
+        changeTab(Tab.SQLResult);
+        Console.test("Showing SQL\n");
         ResultTable result = e.resultTable();
         SQLResult_Input.setText(e.sql().replaceAll("\n", " "));
         SQLResult_Table.setModel(new DefaultTableModel(result.content(), result.titles()));
+        SQLResult_Table.setBackground(UIManager.getColor("Table.background"));
     }
 
+    /**
+     * Displays an error, caused when executing a wrong sql statement, in the UI.
+     */
     public void showSQLError(SQLErrorEvent e) {
-        changeTab(0);
-        Console.debug("Showing SQL Error");
-        String[][] data = {{e.sql()},{e.error()}};
+        changeTab(Tab.SQLResult);
+        Console.debug("Showing SQL Error\n");
+        String[][] data = {{}, {"Fehler:"}, {}, {e.sql()}, {}, {e.error()}};
         String[] titles = {"Fehler:"};
         SQLResult_Table.setModel(new DefaultTableModel(data, titles));
+        SQLResult_Table.setBackground(new Color(253, 63, 65));
     }
 
+    /**
+     * Generates a label as found in the info tab.
+     * @param text the text of the label (the table or columns name)
+     * @param addListener Whether to add a mouse listener.
+     *                    The table labels require one to display their corresponding columns
+     * @return The generated label. It still needs to be added to the UI.
+     */
     private JLabel generateLabel(String text, boolean addListener) {
         JLabel label = new JLabel(text);
         label.setBorder(new EmptyBorder(0, 0, 5, 0));

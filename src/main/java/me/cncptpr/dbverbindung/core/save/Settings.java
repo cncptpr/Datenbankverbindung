@@ -5,14 +5,13 @@ import me.cncptpr.console.Console;
 
 import java.util.HashMap;
 
-public class SaveManager {
-    // TODO: 17.07.2023 Rename class
+public class Settings {
     private final SaveFile file;
     private final Gson gson = new Gson();
     HashMap<String, Object> map = new HashMap<>();
 
-    public SaveManager (String path) {
-        file = new SaveFile(path, this::load);
+    public Settings(String path) {
+        file = new SaveFile(path);
         load();
     }
 

@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -43,8 +44,7 @@ public class InfoHandler {
             try (DBConnection connection = new DBConnection()) {
                 List<TableInfo> tableInfos = new LinkedList<>();
 
-                ResultSet tables = connection.getMetaData().getTables(Main.SETTINGS.getString("database_current"), null, "%", null);
-                String[] tableNames = getTableNames(tables);
+                String[] tableNames = getTableNames(connection.getMetaData());
 
                 for (String tableName : tableNames) {
                     System.out.println(tableName);
@@ -77,10 +77,18 @@ public class InfoHandler {
         for (String name : names) {
             panel.add(generateLabel(name, addListener));
         }
-        Main.getWindow().repaint();
+        Main.repaintWindow();
     }
 
-    private static String[] getTableNames(ResultSet tables) throws SQLException {
+    public static String[] getTableNames() throws SQLException {
+        DBConnection connection = new DBConnection();
+        String[] tableNames = getTableNames(connection.getMetaData());
+        connection.close();
+        return tableNames;
+    }
+
+    public static String[] getTableNames(DatabaseMetaData metaData) throws SQLException {
+        ResultSet tables = metaData.getTables(Main.SETTINGS.getString("database_current"), null, "%", null);
         LinkedList<String> tableNamesList = new LinkedList<>();
         while (tables.next()) {
             tableNamesList.add(tables.getString(3));

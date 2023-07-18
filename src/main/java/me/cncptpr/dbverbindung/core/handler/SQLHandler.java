@@ -95,7 +95,7 @@ public class SQLHandler {
     }
 
 
-    private static String[] getTitles(ResultSet result) throws SQLException {
+    public static String[] getTitles(ResultSet result) throws SQLException {
         ResultSetMetaData meta = result.getMetaData();
         String[] titles = new String[meta.getColumnCount()];
         for (int i = 0; i < titles.length; i++)

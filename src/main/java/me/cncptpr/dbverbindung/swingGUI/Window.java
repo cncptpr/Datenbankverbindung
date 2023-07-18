@@ -9,6 +9,11 @@ import java.awt.*;
 
 import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
 
+
+/**
+ * The window class handles the window and it's content.
+ * It changes between login screen and the main menu.
+ */
 public class Window extends JFrame{
 
     private MainMenu mainMenu;
@@ -24,7 +29,6 @@ public class Window extends JFrame{
 
     private void onLogout(LogoutEvent logoutEvent) {
         showLoginPanel();
-
         setVisible(true);
     }
 
@@ -68,11 +72,4 @@ public class Window extends JFrame{
         pack();
         repaint();
     }
-
-    public void update() {
-        if (mainMenu != null)
-            mainMenu.update();
-    }
-
-
 }
