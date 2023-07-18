@@ -93,11 +93,12 @@ public class MainMenu {
         //=========================================== register to listeners ==========================================//
         SQL_EDIT_EVENT.register(this::editSQL);
         SQL_RUN_EVENT.register(this::showSQL);
+        SQL_UPDATE_EVENT.register(this::showSQLUpdate);
         SQL_ERROR_EVENT.register(this::showSQLError);
 
         //================================================= Run SQL ==================================================//
         SQLResult_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText()));
-        SQLEditor_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLEditor_Input.getText()));
+        SQLEditor_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLEditor_Input.getText().replaceAll("\n", " ")));
         SQLResult_Input.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText()));
 
 
@@ -216,6 +217,24 @@ public class MainMenu {
         SQLResult_Input.setText(e.sql().replaceAll("\n", " "));
         SQLResult_Table.setModel(new DefaultTableModel(result.content(), result.titles()));
         SQLResult_Table.setBackground(UIManager.getColor("Table.background"));
+    }
+
+    /**
+     * Displays a successes message in case an update sql call succeeds but the automatically generated select query fails.
+     * Usually the results of the automatically generated select query are shown.
+     */
+    private void showSQLUpdate(String sql) {
+        changeTab(Tab.SQLResult);
+        Console.debug("Showing SQL Update Success\n");
+        String[][] data = {{},
+                {"Erfolg:"}, {},
+                {sql}, {},
+                {"Der SQL Befehl wurde erfolgreich ausgeführt!"}, {}, {},
+                {"Leider ist das anzeigen der Veränderung fehlgeschlagen"}
+        };
+        String[] titles = {"Erfolg:"};
+        SQLResult_Table.setModel(new DefaultTableModel(data, titles));
+        SQLResult_Table.setBackground(new Color(86, 236, 28));
     }
 
     /**

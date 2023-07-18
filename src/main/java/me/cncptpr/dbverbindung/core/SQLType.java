@@ -5,7 +5,8 @@ public enum SQLType {
     SELECT("SELECT"),
     UPDATE("UPDATE"),
     INSERT("INSERT"),
-    DELETE("DELETE");
+    DELETE("DELETE"),
+    UNKNOWN("Failed to detect");
 
     private final String regex;
 
@@ -22,6 +23,6 @@ public enum SQLType {
         for(SQLType type : SQLType.values())
             if (first.equalsIgnoreCase(type.getRegex()))
                 return type;
-        throw new Error("Couldn't find type of the SQL Command!");
+        return UNKNOWN;
     }
 }

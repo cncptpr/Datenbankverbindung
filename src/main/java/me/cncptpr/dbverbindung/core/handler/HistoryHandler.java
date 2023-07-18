@@ -5,18 +5,17 @@ import me.cncptpr.dbverbindung.core.HistoryEntrance;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.cncptpr.dbverbindung.core.events.EventHandlers.SQL_ERROR_EVENT;
-import static me.cncptpr.dbverbindung.core.events.EventHandlers.SQL_RUN_EVENT;
+import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
 
 public class HistoryHandler {
 
-    private static final List<HistoryEntrance> items = new ArrayList<>();
+    private static final ArrayList<HistoryEntrance> items = new ArrayList<>();
 
 
     private HistoryHandler() {}
 
     public static void add(HistoryEntrance entrance) {
-        items.add(entrance);
+        items.add(0, entrance);
     }
 
     public static void add(String sql) {
@@ -36,6 +35,7 @@ public class HistoryHandler {
 
     public static void init() {
         SQL_RUN_EVENT.register(event -> add(event.sql()));
+        SQL_UPDATE_EVENT.register(HistoryHandler::add);
         SQL_ERROR_EVENT.register(event -> add(event.sql(), event.error()));
     }
 }

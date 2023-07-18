@@ -3,6 +3,8 @@ package me.cncptpr.dbverbindung.core.handler;
 import me.cncptpr.dbverbindung.core.SQLType;
 import me.cncptpr.dbverbindung.core.ResultTable;
 import me.cncptpr.dbverbindung.core.dbconnection.DBConnection;
+import me.cncptpr.dbverbindung.core.error.UpdateQueryException;
+import me.cncptpr.dbverbindung.core.events.sqlUpdateEvent.SQLUpdateEventHandler;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,8 +12,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import static me.cncptpr.dbverbindung.core.events.EventHandlers.SQL_ERROR_EVENT;
-import static me.cncptpr.dbverbindung.core.events.EventHandlers.SQL_RUN_EVENT;
+import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
 
 public class SQLHandler {
 
@@ -25,10 +26,12 @@ public class SQLHandler {
             SQL_RUN_EVENT.callAllListeners(sql, resultTable);
         } catch (SQLException e) {
             SQL_ERROR_EVENT.callAllListeners(sql, e.getMessage());
+        } catch (UpdateQueryException e) {
+            SQL_UPDATE_EVENT.callAllListeners(sql);
         }
     }
 
-    private static ResultTable executeSQL(String sql) throws SQLException {
+    private static ResultTable executeSQL(String sql) throws SQLException, UpdateQueryException {
         SQLType type = SQLType.getType(sql);
         if (type.equals(SQLType.SELECT))
             return executeSQLSelect(sql);
@@ -52,14 +55,18 @@ public class SQLHandler {
  //       return (ResultSet) DBConnection.connect_scope(connection -> connection.prepareStatement(getSelectSQL(sql)).executeQuery());
     }
 
-    private static ResultTable executeSQLUpdate(String sql) throws SQLException {
+    private static ResultTable executeSQLUpdate(String sql) throws SQLException, UpdateQueryException {
         if(!isBadSQL(sql)) {
             DBConnection connection = new DBConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.executeUpdate();
             connection.close();
         }
-        return executeSQLSelect(sql);
+        try {
+           return executeSQLSelect(sql);
+        } catch (SQLException e) {
+            throw new UpdateQueryException("Failed to run SELECT after Update execution");
+        }
     }
 
     private static boolean isBadSQL(String sql) {
@@ -73,6 +80,7 @@ public class SQLHandler {
             case UPDATE -> getSelectSQLFromUpdate(sql);
             case INSERT -> getSelectSQLFromInsert(sql);
             case DELETE -> getSelectSQLFromDelete(sql);
+            case UNKNOWN -> "";
             //case CREATE_DATABASE -> null;
             //case CREATE_TABLE -> null;
             //case SELECT_INTO -> null;

@@ -73,7 +73,7 @@ public class LoginPanel {
     }
 
     /**
-     * When a login error occurs the look and text of the login button is changed for visual feedback.
+     * When a login error occurs the look and the text of the login button is changed for visual feedback.
      * The button is automatically reset after three seconds via the {@link #resetLoginButton()} method.
      */
     private void setLoginButtonToError() {
