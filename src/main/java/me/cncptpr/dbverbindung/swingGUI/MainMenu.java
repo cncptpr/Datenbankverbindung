@@ -17,13 +17,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.sql.SQLException;
 
-import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
-
 import static me.cncptpr.dbverbindung.Main.SETTINGS;
+import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
 
 
 /**
@@ -95,9 +93,10 @@ public class MainMenu {
         SQL_ERROR_EVENT.register(this::showSQLError);
 
         //================================================= Run SQL ==================================================//
-        SQLResult_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText()));
-        SQLEditor_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLEditor_Input.getText()));
-        SQLResult_Input.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText()));
+        SQLResult_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText().trim()));
+        SQLResult_Input.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText().trim()));
+        SQLEditor_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLEditor_Input.getText().trim()));
+        SQLEditor_Input.addKeyListener(onCtrlEnter(() -> SQLHandler.runSQL(SQLEditor_Input.getText().trim())));
 
 
         //========================================= Fill DBChooser Drop Down =========================================//
@@ -129,6 +128,22 @@ public class MainMenu {
 
         //============================================== Initial Tab =================================================//
         changeTab(Tab.SQLEditor);
+    }
+
+    /**
+     * Returns a key listener that runs a Runnable when Ctrl + Enter is being pressed
+     * @param run The runnable that gets executed
+     * @return the key listener
+     */
+    private KeyListener onCtrlEnter(Runnable run) {
+        return new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER && e.isControlDown()) {
+                    run.run();
+                }
+            }
+        };
     }
 
     private void tabChanged(ChangeEvent changeEvent) {
