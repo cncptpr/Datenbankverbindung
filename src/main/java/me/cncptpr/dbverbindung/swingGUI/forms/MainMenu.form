@@ -54,7 +54,7 @@
                 </constraints>
                 <properties>
                   <font size="16"/>
-                  <text value="SELECT * FROM test"/>
+                  <text value=""/>
                 </properties>
               </component>
               <component id="c88c3" class="javax.swing.JButton" binding="SQLResult_SendButton">
