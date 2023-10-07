@@ -1,7 +1,6 @@
 package me.cncptpr.dbverbindung.swingGUI;
 
 import me.cncptpr.console.Console;
-import me.cncptpr.dbverbindung.Main;
 import me.cncptpr.dbverbindung.core.ColumnInfo;
 import me.cncptpr.dbverbindung.core.ResultTable;
 import me.cncptpr.dbverbindung.core.TableInfo;
@@ -20,7 +19,6 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.sql.SQLException;
 
 import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
@@ -65,7 +63,7 @@ public class MainMenu {
     public JButton SQLResult_SendButton;
 
     //SQL Editor
-    public JPanel SQLEditor_history;
+    private JLabel SQLEditor_InfoLabel;
     public JTextArea SQLEditor_Input;
     public JButton SQLEditor_SendButton;
 
@@ -98,7 +96,7 @@ public class MainMenu {
 
         //================================================= Run SQL ==================================================//
         SQLResult_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText()));
-        SQLEditor_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLEditor_Input.getText().replaceAll("\n", " ")));
+        SQLEditor_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLEditor_Input.getText()));
         SQLResult_Input.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText()));
 
 
@@ -155,6 +153,12 @@ public class MainMenu {
     }
 
     private void updateSQLEditor() {
+        TableInfo[] infos = InfoHandler.getInfo();
+        StringBuilder builder = new StringBuilder("  ");
+        for (TableInfo info : infos) {
+            builder.append(info.summary()).append(" | ");
+        }
+        SQLEditor_InfoLabel.setText(builder.toString());
     }
 
     private void updateHistory() {
@@ -168,7 +172,7 @@ public class MainMenu {
         Info_Tables.setViewportView(tablePanel);
         Info_Columns.setViewportView(columnPanel);
 
-        TableInfo[] info = InfoHandler.getInfo();
+        TableInfo[] infos = InfoHandler.getInfo();
 
         tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.PAGE_AXIS));
         tablePanel.setBorder(new EmptyBorder(5, 10, 5, 10));
@@ -176,10 +180,10 @@ public class MainMenu {
         columnPanel.setBorder(new EmptyBorder(5, 10, 5, 10));
 
         if (selectedTable == null) {
-            selectedTable = info[0].name();
+            selectedTable = infos[0].name();
         }
 
-        for (TableInfo table : info){
+        for (TableInfo table : infos){
             boolean tableSelected = table.name().equalsIgnoreCase(selectedTable);
             tablePanel.add(generateTableLabel(table.name(), tableSelected));
             if (tableSelected) {
@@ -251,7 +255,7 @@ public class MainMenu {
 
     /**
      * Generates a label as found in the info tab to display the table information.
-     * Uses {@link #generateLabel(String, Runnable, ColorProvider, ColorProvider)} for generation.
+     * Uses {@link #generateLabel(String, Runnable, Runnable, ColorProvider, ColorProvider)} for generation.
      * @param name The name of the table and the text displayed on the label.
      * @param selected Whether this is the selected table,
      *                 a.k.a the table of which the columns are being displayed.
@@ -263,7 +267,9 @@ public class MainMenu {
             () -> {
                 selectedTable = name;
                 updateInfo();
+                SQLResult_Input.setText("SELECT * FROM " + name);
             },
+            () -> SQLHandler.runSQL("SELECT *\nFROM " + name),
             () -> selected ? Color.BLUE : Color.DARK_GRAY,
             () -> selected ? new Color(0, 0, 166) : Color.BLACK
         );
@@ -271,7 +277,7 @@ public class MainMenu {
 
     /**
      * Generates a label as found in the info tab to display the column information.
-     * Uses {@link #generateLabel(String, Runnable, ColorProvider, ColorProvider)} for generation.
+     * Uses {@link #generateLabel(String, Runnable, Runnable, ColorProvider, ColorProvider)} for generation.
      * @param descriptor The text displayed on the label. It should give information about the column.
      *                   Pattern: {@code "columnName (columnType)"}
      * @param identifier The text being copied when clicking on the label.
@@ -286,6 +292,7 @@ public class MainMenu {
                 StringSelection selection = new StringSelection(identifier);
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
             },
+            () -> {},
             () -> Color.DARK_GRAY,
             () -> Color.BLACK
         );
@@ -299,6 +306,8 @@ public class MainMenu {
      * @param text The displayed text.
      * @param onClick An on click handler.
      *                Used by the helper methods for selecting a table or copying of the columns' identifier.
+     * @param onDoubleClick An on double click handler.
+     *                      Used by the helper methods for special action on double click.
      * @param normalColor The normal color of the text.
      *                    By not using the color class but instead supporting lambda expressions,
      *                    different coloring of e.g. the selected table is easier.
@@ -307,7 +316,7 @@ public class MainMenu {
      *                   or {@code () -> onlyOneColor}
      * @return The generated label. Still needs to be added to the UI
      */
-    public JLabel generateLabel(String text, Runnable onClick, ColorProvider normalColor, ColorProvider hoverColor) {
+    public JLabel generateLabel(String text, Runnable onClick, Runnable onDoubleClick, ColorProvider normalColor, ColorProvider hoverColor) {
         JLabel label = new JLabel(text);
         label.setBorder(new EmptyBorder(0, 0, 5, 0));
         label.setFont(new Font(null, Font.BOLD, 15));
@@ -318,7 +327,12 @@ public class MainMenu {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     onClick.run();
+                    if (e.getClickCount() == 2) {
+                        onDoubleClick.run();
+                    }
                 }
+
+
             }
 
             @Override

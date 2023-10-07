@@ -30,6 +30,9 @@ public class LoginPanel {
         databaseTextField.addActionListener(e -> ipTextField.grabFocus());
         ipTextField.addActionListener(this::OnLoginClicked);
         usernameTextField.grabFocus();
+        if (!DBConnection.isJDBCDriverThere()) {
+            setLoginButtonToDriverError();
+        }
     }
 
     public void OnLoginClicked(ActionEvent ignored) {
@@ -88,6 +91,17 @@ public class LoginPanel {
                 throw new RuntimeException(e);
             }
         }).start();
+    }
+
+    /**
+     * When the JDBC Driver is missing the text of the login button is changed for visual feedback.
+     * The button is locked because you can't log in without the driver.
+     */
+    private void setLoginButtonToDriverError() {
+        loginButton.setBackground(new Color(94, 7, 16));
+        loginButton.setForeground(Color.WHITE);
+        loginButton.setText("Driver fehlt");
+        loginButton.setEnabled(false);
     }
 
     /**

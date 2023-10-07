@@ -1,6 +1,7 @@
 package me.cncptpr.dbverbindung.core.dbconnection;
 
 
+import me.cncptpr.console.Console;
 import me.cncptpr.dbverbindung.Main;
 import me.cncptpr.dbverbindung.core.save.Settings;
 
@@ -12,8 +13,23 @@ public class DBConnection implements AutoCloseable {
     public static boolean canConnect() {
         try (DBConnection ignored = new DBConnection()){
             return true;
-        } catch (SQLException e) {
+        } catch (SQLException er) {
+            if (er.getMessage().contains("No suitable driver found")) {
+                Console.debug("Der scheiß #r #red JDBC Driver #r geht schon wieder nicht!!!!!!!!!!!!\n");
+            }
             return false;
+        }
+    }
+
+    public static boolean isJDBCDriverThere() {
+        try (DBConnection ignored = new DBConnection()){
+            return true;
+        } catch (SQLException er) {
+            if (er.getMessage().contains("No suitable driver found")) {
+                Console.info("Der scheiß #r #red JDBC Driver #r geht schon wieder nicht!!!!!!!!!!!!\n");
+                return false;
+            }
+            return true;
         }
     }
 

@@ -13,6 +13,9 @@ import me.cncptpr.dbverbindung.core.save.Settings;
  */
 public class Main {
 
+    public static final String HISTORY_DIR = "history";
+    public static final String SETTINGS_DIR = ".";
+
     private static Window window;
 
     /**
@@ -20,16 +23,12 @@ public class Main {
      * The settings file currently stores no settings but the credentials for the Program.
      */
     // TODO: 17.07.2023 Maybe a rename?
-    public static final Settings SETTINGS = new Settings("settings.json");
-
+    public static final Settings SETTINGS = new Settings(SETTINGS_DIR + "/settings.json");
 
     // TODO: 17.07.2023 Font Size changeable / Bigger
 
-    // TODO: 17.07.2023 DB Overview in Editor
-
     public static void main(String[] args) {
         window = new Window();
-
         LoginHandler.login();
     }
 
