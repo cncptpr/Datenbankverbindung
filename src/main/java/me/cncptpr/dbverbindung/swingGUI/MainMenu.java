@@ -125,6 +125,7 @@ public class MainMenu {
         HistoryHandler.init();
         History_TextArea.setEditable(false);
         History_ScrollPane.setViewportView(History_TextArea);
+        History_TextArea.setFont(History_ScrollPane.getFont());
 
         //============================================== Initial Tab =================================================//
         changeTab(Tab.SQLEditor);
