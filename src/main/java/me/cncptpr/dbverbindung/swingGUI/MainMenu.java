@@ -82,10 +82,10 @@ public class MainMenu {
 
     //History
     public JScrollPane History_ScrollPane;
+    private JButton AboutButton;
     private final JTextArea History_TextArea = new JTextArea();
 
-    public MainMenu() {
-
+    public MainMenu(JFrame frame) {
         //=========================================== register to listeners ==========================================//
         SQL_EDIT_EVENT.register(this::editSQL);
         SQL_RUN_EVENT.register(this::showSQL);
@@ -125,6 +125,9 @@ public class MainMenu {
         History_TextArea.setEditable(false);
         History_ScrollPane.setViewportView(History_TextArea);
         History_TextArea.setFont(History_ScrollPane.getFont());
+
+        //============================================== About Dialog ================================================//
+        AboutButton.addActionListener(e -> AboutDialog.showAboutDialog(frame));
 
         //============================================== Initial Tab =================================================//
         changeTab(Tab.SQLEditor);

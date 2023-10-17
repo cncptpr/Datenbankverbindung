@@ -28,7 +28,7 @@ public class Main {
     // TODO: 17.07.2023 Font Size changeable / Bigger
 
     public static void main(String[] args) {
-        window = new Window();
+        window = new Window("TiTab SQL");
         LoginHandler.login();
     }
 

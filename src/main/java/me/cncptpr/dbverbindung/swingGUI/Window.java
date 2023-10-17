@@ -1,13 +1,14 @@
 package me.cncptpr.dbverbindung.swingGUI;
 
-import me.cncptpr.dbverbindung.core.events.logoutEvent.LogoutEvent;
 import me.cncptpr.dbverbindung.core.events.loginEvent.LoginEvent;
+import me.cncptpr.dbverbindung.core.events.logoutEvent.LogoutEvent;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import java.awt.*;
 
-import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
+import static me.cncptpr.dbverbindung.core.events.EventHandlers.LOGIN_EVENT;
+import static me.cncptpr.dbverbindung.core.events.EventHandlers.LOGOUT_EVENT;
 
 
 /**
@@ -16,11 +17,13 @@ import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
  */
 public class Window extends JFrame{
 
+    private final String title;
     private MainMenu mainMenu;
     private LoginPanel loginPanel;
 
-    public Window() {
-        super("SQL Interface");
+    public Window(String title) {
+        super(title);
+        this.title = title;
         setLookAndFeel();
         setup();
         LOGIN_EVENT.register(this::onLogin);
@@ -56,7 +59,7 @@ public class Window extends JFrame{
 
     private void showMenuPanel() {
         loginPanel = null;
-        mainMenu = new MainMenu();
+        mainMenu = new MainMenu(this);
         setSize(950, 700 + getInsets().top);
         setResizable(true);
         setContentPane(mainMenu.getMainPanel());
