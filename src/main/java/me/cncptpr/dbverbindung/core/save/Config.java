@@ -5,12 +5,12 @@ import me.cncptpr.console.Console;
 
 import java.util.HashMap;
 
-public class Settings {
+public class Config {
     private final SaveFile file;
     private final Gson gson = new Gson();
     HashMap<String, Object> map = new HashMap<>();
 
-    public Settings(String path) {
+    public Config(String path) {
         file = new SaveFile(path);
         load();
     }

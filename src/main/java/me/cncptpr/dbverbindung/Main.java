@@ -2,7 +2,7 @@ package me.cncptpr.dbverbindung;
 
 import me.cncptpr.dbverbindung.swingGUI.Window;
 import me.cncptpr.dbverbindung.core.handler.LoginHandler;
-import me.cncptpr.dbverbindung.core.save.Settings;
+import me.cncptpr.dbverbindung.core.save.Config;
 
 
 /**
@@ -13,8 +13,8 @@ import me.cncptpr.dbverbindung.core.save.Settings;
  */
 public class Main {
 
-    public static final String HISTORY_DIR = "history";
-    public static final String SETTINGS_DIR = ".";
+    public static final String HISTORY_DIR = ".titab_sql";
+    public static final String CONFIG_DIR = ".titab_sql";
 
     private static Window window;
 
@@ -23,7 +23,7 @@ public class Main {
      * The settings file currently stores no settings but the credentials for the Program.
      */
     // TODO: 17.07.2023 Maybe a rename?
-    public static final Settings SETTINGS = new Settings(SETTINGS_DIR + "/settings.json");
+    public static final Config CONFIG = new Config(CONFIG_DIR + "/config.json");
 
     // TODO: 17.07.2023 Font Size changeable / Bigger
 

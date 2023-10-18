@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import static me.cncptpr.dbverbindung.Main.SETTINGS;
+import static me.cncptpr.dbverbindung.Main.CONFIG;
 import static me.cncptpr.dbverbindung.core.events.EventHandlers.LOGIN_EVENT;
 
 /**
@@ -36,11 +36,11 @@ public class LoginPanel {
     }
 
     public void OnLoginClicked(ActionEvent ignored) {
-        Main.SETTINGS.set("username", getUsername());
-        Main.SETTINGS.set("password", getPassword());
-        Main.SETTINGS.set("database_current", getDatabase());
-        Main.SETTINGS.set("database_login", getDatabase());
-        Main.SETTINGS.set("ip", getIP());
+        Main.CONFIG.set("username", getUsername());
+        Main.CONFIG.set("password", getPassword());
+        Main.CONFIG.set("database_current", getDatabase());
+        Main.CONFIG.set("database_login", getDatabase());
+        Main.CONFIG.set("ip", getIP());
         resetLoginButton();
         if (DBConnection.canConnect())
             LOGIN_EVENT.call(getUsername(), getDatabase(), getIP());
@@ -69,10 +69,10 @@ public class LoginPanel {
      * Fills the forum with the information in the settings file
      */
     public void fill() {
-        usernameTextField.setText(SETTINGS.getString("username"));
-        passwordTextField.setText(SETTINGS.getString("password"));
-        databaseTextField.setText(SETTINGS.getString("database_login"));
-        ipTextField.setText(SETTINGS.getString("ip"));
+        usernameTextField.setText(CONFIG.getString("username"));
+        passwordTextField.setText(CONFIG.getString("password"));
+        databaseTextField.setText(CONFIG.getString("database_login"));
+        ipTextField.setText(CONFIG.getString("ip"));
     }
 
     /**

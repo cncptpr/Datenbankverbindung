@@ -20,7 +20,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.sql.SQLException;
 
-import static me.cncptpr.dbverbindung.Main.SETTINGS;
+import static me.cncptpr.dbverbindung.Main.CONFIG;
 import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
 
 
@@ -105,9 +105,9 @@ public class MainMenu {
             for (String database : connection.getAllDatabases()) {
                 DBChooser_DropDown.addItem(database);
             }
-            DBChooser_DropDown.setSelectedItem(SETTINGS.getString("database_current"));
+            DBChooser_DropDown.setSelectedItem(CONFIG.getString("database_current"));
             DBChooser_DropDown.addActionListener(e -> {
-                SETTINGS.set("database_current", DBChooser_DropDown.getSelectedItem());
+                CONFIG.set("database_current", DBChooser_DropDown.getSelectedItem());
                 changeTab(Tab.SQLEditor);
             });
         } catch (SQLException e) {
@@ -238,8 +238,13 @@ public class MainMenu {
         Console.test("Showing SQL\n");
         ResultTable result = e.resultTable();
         SQLResult_Input.setText(e.sql().replaceAll("\n", " "));
-        SQLResult_Table.setModel(new DefaultTableModel(result.content(), result.titles()));
         SQLResult_Table.setBackground(UIManager.getColor("Table.background"));
+        if (result.content().length == 0) {
+            String[][] data = {{"Keine Ergebnisse"}};
+            SQLResult_Table.setModel(new DefaultTableModel(data, result.titles()));
+        } else {
+            SQLResult_Table.setModel(new DefaultTableModel(result.content(), result.titles()));
+        }
     }
 
     /**
@@ -277,7 +282,7 @@ public class MainMenu {
      * Uses {@link #generateLabel(String, Runnable, Runnable, ColorProvider, ColorProvider)} for generation.
      * @param name The name of the table and the text displayed on the label.
      * @param selected Whether this is the selected table,
-     *                 a.k.a the table of which the columns are being displayed.
+     *                 a.k.a. the table of which the columns are being displayed.
      * @return The generated label. Still needs to be added to the UI
      */
     public JLabel generateTableLabel(String name, boolean selected) {
@@ -345,9 +350,11 @@ public class MainMenu {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    onClick.run();
                     if (e.getClickCount() == 2) {
+                        Console.test("Double Click!");
                         onDoubleClick.run();
+                    } else {
+                        onClick.run();
                     }
                 }
 

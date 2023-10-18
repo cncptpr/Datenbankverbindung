@@ -1,20 +1,8 @@
 package me.cncptpr.dbverbindung.core;
 
-import java.util.LinkedList;
 import java.sql.Types;
 
 public record ColumnInfo (String name, int type) {
-
-    public static ColumnInfo[] toColumnInfo(String[] names, Integer[] types) {
-        if (names.length != types.length)
-            throw new IllegalArgumentException("names and types need the same length");
-
-        LinkedList<ColumnInfo> columnInfos = new LinkedList<>();
-        for(int i = 0; i < names.length; i++) {
-            columnInfos.add(new ColumnInfo(names[i], types[i]));
-        }
-        return columnInfos.toArray(new ColumnInfo[0]);
-    }
 
     /**
      * Generates a descriptor for the column with the name and the type name (after java.sql.Types).

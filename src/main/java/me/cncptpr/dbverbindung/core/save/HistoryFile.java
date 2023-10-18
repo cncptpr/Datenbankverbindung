@@ -15,18 +15,24 @@ import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-
-// TODO: 07.10.2023 Documentation
+/**
+ * {@link HistoryFile} handles the reading, writing and organisation of the sql history.
+ * For each day (in the planned use case the is only one session per day) a new file containing the history is created.
+ * Multiple creations per day will append to the same file.
+ */
 public class HistoryFile {
 
     PrintWriter writer;
 
-    public HistoryFile() throws IOException {
-        this("");
-    }
-
+    /**
+     * Construct a {@link HistoryFile} object that is operating in a given directory.
+     * Multiple file will be created over time, so this directory should not be a user directory, but it can be the same one used for the settings.
+     * All required folders will be created by this object.
+     * @param path The path to the history directory
+     * @throws IOException when unable to create or access the required folder or files
+     */
     public HistoryFile(String path) throws IOException {
-        new File(path).mkdirs();
+        boolean ignored = new File(path).mkdirs();
         Date date = new Date(Calendar.getInstance().getTime().getTime());
 
         String formatPath = formatPath(path, "history", date);
@@ -34,29 +40,22 @@ public class HistoryFile {
         registerFile(formatPath);
     }
 
+    /**
+     * Appends the rendered {@link HistoryEntrance} to the end of the current file history file.
+     * @param history The {@link HistoryEntrance} to be rendered and appended.
+     */
     public void append(HistoryEntrance history) {
         append(history.render());
     }
 
+    /**
+     * Appends a {@link String} to the end of the current file history file.
+     * This {@link String} should be the output of {@link HistoryEntrance#render()}.
+     * @param history The {@link String} to be appended.
+     */
     public void append(String history) {
         writer.println(history);
         writer.flush();
-    }
-
-    /**
-     * Test for the History File Class
-     */
-    public static void main(String[] agrs) throws IOException {
-        HistoryFile file = new HistoryFile();
-        file.append(new HistoryEntrance("test1"));
-        file.append(new HistoryEntrance("test2"));
-        file.append(new HistoryEntrance("test3"));
-        file.append(new HistoryEntrance("test4"));
-        HistoryFile file2 = new HistoryFile();
-        file2.append(new HistoryEntrance("test5"));
-        file2.append(new HistoryEntrance("test6"));
-        file2.append(new HistoryEntrance("test7"));
-        file2.append(new HistoryEntrance("test8"));
     }
 
     /**
@@ -71,16 +70,27 @@ public class HistoryFile {
         return formatPath(path, name) + "_" + timeStamp + ".txt";
     }
 
+    /**
+     * Assembles the file path from following arguments
+     * @param path to the folder of the file location
+     * @param name used for the file
+     * @return Path for the file as a String
+     */
     private static String formatPath(String path, String name) {
         boolean doNotAddSlash = path.endsWith("/") || path.endsWith("\\") || path.isEmpty();
         return path + (doNotAddSlash?"":"/") + name;
     }
 
+    /**
+     * Registers a new file in order to keep better track of all the history file.
+     * @param filePath the path to the file itself (not the directory)
+     * @throws IOException when unable to access or create the required files
+     */
     private static void registerFile(String filePath) throws IOException {
         String parent = new File(filePath).getParent();
         parent = parent==null ? "" : (parent + "/");
         File registryPath = new File(formatPath(parent, ".history"));
-        registryPath.createNewFile();
+        boolean ignored = registryPath.createNewFile();
 
         List<String> registeredFiles = Files.readAllLines(registryPath.toPath());
         registeredFiles.remove(filePath);
@@ -90,9 +100,11 @@ public class HistoryFile {
 
     /**
      * Reads the contents of the last History file in order to be displayed again.
+     * The last History file is the one of the day before until there are entrances to the current file,
+     * then the last file is the current one.
      * @param folderPath Path to the folder containing all the history files
      * @return The contest of the file in one String
-     * @throws IOException
+     * @throws IOException if an I/O error occurs reading from the file or a malformed or unmappable byte sequence is read
      */
     public static String readLastHistoryFile(String folderPath) throws IOException {
         File registryPath = new File(formatPath(folderPath, ".history"));
@@ -104,10 +116,19 @@ public class HistoryFile {
         return lastFile;
     }
 
+
     private static String read(String filePath) throws IOException {
         return Files.readString(Paths.get(filePath), StandardCharsets.UTF_8);
     }
 
+    /**
+     * A helper method to wrap a {@link HistoryFile} into an {@link Optional}
+     * and set it to empty when an {@link IOException} occurs.
+     * This is done because the History File is not essential to the Programm
+     * and to force checks whether it failed to construct.
+     * @param path The path to the history directory
+     * @return {@link Optional} of a {@link HistoryFile} or a empty one when there is an error
+     */
     public static Optional<HistoryFile> newAsOptional(String path) {
         try {
             return Optional.of(new HistoryFile(path));

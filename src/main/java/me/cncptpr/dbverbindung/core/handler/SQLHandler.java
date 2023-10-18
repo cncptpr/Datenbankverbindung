@@ -1,10 +1,9 @@
 package me.cncptpr.dbverbindung.core.handler;
 
-import me.cncptpr.dbverbindung.core.SQLType;
 import me.cncptpr.dbverbindung.core.ResultTable;
+import me.cncptpr.dbverbindung.core.SQLType;
 import me.cncptpr.dbverbindung.core.dbconnection.DBConnection;
 import me.cncptpr.dbverbindung.core.error.UpdateQueryException;
-import me.cncptpr.dbverbindung.core.events.sqlUpdateEvent.SQLUpdateEventHandler;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -65,7 +64,7 @@ public class SQLHandler {
         try {
            return executeSQLSelect(sql);
         } catch (SQLException e) {
-            throw new UpdateQueryException("Failed to run SELECT after Update execution");
+            throw new UpdateQueryException();
         }
     }
 
