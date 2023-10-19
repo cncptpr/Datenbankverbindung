@@ -127,7 +127,7 @@ public class HistoryFile {
      * This is done because the History File is not essential to the Programm
      * and to force checks whether it failed to construct.
      * @param path The path to the history directory
-     * @return {@link Optional} of a {@link HistoryFile} or a empty one when there is an error
+     * @return {@link Optional} of a {@link HistoryFile} or an empty one when there is an error
      */
     public static Optional<HistoryFile> newAsOptional(String path) {
         try {

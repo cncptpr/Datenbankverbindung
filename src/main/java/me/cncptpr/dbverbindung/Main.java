@@ -1,42 +1,31 @@
 package me.cncptpr.dbverbindung;
 
-import me.cncptpr.dbverbindung.swingGUI.Window;
-import me.cncptpr.dbverbindung.core.handler.LoginHandler;
+import me.cncptpr.dbverbindung.core.events.EventHandlers;
 import me.cncptpr.dbverbindung.core.save.Config;
+import me.cncptpr.dbverbindung.swingGUI.Window;
 
 
 /**
  * Main Class of the Application.
- * It holds the Settings/Credentials,
- * creates the Window
+ * It holds the {@link Config},
+ * creates the {@link Window}
  * and kicks of initial connection attempt
  */
 public class Main {
 
+    // TODO: 19.10.2023 CONFIG (mit Credentials) -> CONFIG für Ip, Datenbank und History Path bei der JAR Datei.
+
+    // TODO: 19.10.2023 Automatisch die CONFIG generieren und mit Werten aus UI ausfüllen.
+
     public static final String HISTORY_DIR = ".titab_sql";
     public static final String CONFIG_DIR = ".titab_sql";
 
-    private static Window window;
-
-    /**
-     * Adapter to the settings file.
-     * The settings file currently stores no settings but the credentials for the Program.
-     */
-    // TODO: 17.07.2023 Maybe a rename?
     public static final Config CONFIG = new Config(CONFIG_DIR + "/config.json");
 
-    // TODO: 17.07.2023 Font Size changeable / Bigger
-
     public static void main(String[] args) {
-        window = new Window("TiTab SQL");
-        LoginHandler.login();
+        Window ignored = new Window("TiTab SQL");
+        //LoginHandler.login();
+        EventHandlers.LOGOUT_EVENT.call();
     }
 
-    /**
-     * Some changes to the ui require the repaint of the window, but don't trigger it.
-     * This method does.
-     */
-    public static void repaintWindow() {
-        window.repaint();
-    }
 }

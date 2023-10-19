@@ -95,8 +95,8 @@ public class MainMenu {
         //================================================= Run SQL ==================================================//
         SQLResult_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText().trim()));
         SQLResult_Input.addActionListener(e -> SQLHandler.runSQL(SQLResult_Input.getText().trim()));
-        SQLEditor_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLEditor_Input.getText().trim()));
-        SQLEditor_Input.addKeyListener(onCtrlEnter(() -> SQLHandler.runSQL(SQLEditor_Input.getText().trim())));
+        SQLEditor_SendButton.addActionListener(e -> SQLHandler.runSQL(SQLEditor_Input.getText().trim().replaceAll("\n", " \n")));
+        SQLEditor_Input.addKeyListener(onCtrlEnter(() -> SQLHandler.runSQL(SQLEditor_Input.getText().trim().replaceAll("\n", " \n"))));
 
 
         //========================================= Fill DBChooser Drop Down =========================================//
