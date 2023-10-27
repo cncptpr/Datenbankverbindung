@@ -23,15 +23,30 @@ public class Config {
     private static final String IP = "ip";
     private static final String HISTORY_DIR = "history_dir";
 
-    private static final String PATH = "config.json";
-
     public Config() {
+        // I can't figure out how to work with paths ...
+        // But this takes the path of the Jar file, moves one directory up,
+        // converts it to a String so that the name of the config file can be appended
+        // and then makes a Path again.
+        Path path = new File(
+                new File(
+                        // (1) Get path from the Jar file inside the installation directory (as String)
+                        //     And yes getPath() returns a String
+                        Config.class.getProtectionDomain().getCodeSource().getLocation().getPath()
+                // (2) Get the Parent (as Path)
+                ).toPath().getParent()
+                        // (3) Append the file name (as String)
+                        .toString() + "/config.json"
+        // (4) Final conversion (to Path)
+        ).toPath();
+        // This code hurts, but I can't find out how to append to a path object
+
         try {
-            file = Optional.of(new SaveFile(PATH));
+            file = Optional.of(new SaveFile(path));
         } catch (IOException e) {
             file = Optional.empty();
-            Path p = new File(PATH).toPath();
-            Console.error("#red Config File could not be accessed#r, using default config.\n\tFile Path: %s", p.toAbsolutePath().toString());
+            String absolutePath = path.toAbsolutePath().toString();
+            Console.error("#red Config File could not be accessed#r, using default config.\n\tFile Path: %s", absolutePath);
         }
         map = defaultSettings();
         load();

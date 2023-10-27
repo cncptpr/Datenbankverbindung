@@ -1,11 +1,11 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="TiTab SQL:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/TiTab_SQL_jar</output-path>
+  <artifact type="jar" name="Titab SQL">
+    <output-path>$PROJECT_DIR$/out/artifacts/Titab_SQL</output-path>
     <root id="archive" name="Datenbankverbindung.jar">
       <element id="module-output" name="Datenbankverbindung" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.9/gson-2.8.9.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/libs/Console.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/annotations/24.0.1/annotations-24.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/src/main/resources/Console.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.9/gson-2.8.9.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/mysql/mysql-connector-j/8.1.0/mysql-connector-j-8.1.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/protobuf/protobuf-java/3.21.9/protobuf-java-3.21.9.jar" path-in-jar="/" />
     </root>

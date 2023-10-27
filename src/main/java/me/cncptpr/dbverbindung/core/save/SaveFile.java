@@ -13,9 +13,9 @@ public class SaveFile {
     private final Path path;
     private final File file;
 
-    public SaveFile(String pathText) throws IOException {
-        path = Path.of(pathText);
-        file = new File(pathText);
+    public SaveFile(Path path) throws IOException {
+        this.path = path;
+        file = path.toFile();
         boolean ignored = file.createNewFile();
     }
 
@@ -24,7 +24,7 @@ public class SaveFile {
             Console.debug("Reading\n");
             return Files.readString(path);
         } catch (IOException e) {
-            e.printStackTrace();
+            Console.error(e);
         }
         return null;
     }
@@ -36,7 +36,7 @@ public class SaveFile {
             writer.print(text);
             writer.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Console.error(e);
         }
     }
 
