@@ -3,6 +3,7 @@ package me.cncptpr.dbverbindung.swingGUI;
 import me.cncptpr.console.Console;
 import me.cncptpr.dbverbindung.core.ColumnInfo;
 import me.cncptpr.dbverbindung.core.ResultTable;
+import me.cncptpr.dbverbindung.core.State;
 import me.cncptpr.dbverbindung.core.TableInfo;
 import me.cncptpr.dbverbindung.core.dbconnection.DBConnection;
 import me.cncptpr.dbverbindung.core.events.sqlErrorEvent.SQLErrorEvent;
@@ -20,7 +21,6 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.sql.SQLException;
 
-import static me.cncptpr.dbverbindung.Main.CONFIG;
 import static me.cncptpr.dbverbindung.core.events.EventHandlers.*;
 
 
@@ -105,9 +105,9 @@ public class MainMenu {
             for (String database : connection.getAllDatabases()) {
                 DBChooser_DropDown.addItem(database);
             }
-            DBChooser_DropDown.setSelectedItem(CONFIG.getString("database_current"));
+            DBChooser_DropDown.setSelectedItem(State.state().databaseCurrent());
             DBChooser_DropDown.addActionListener(e -> {
-                CONFIG.set("database_current", DBChooser_DropDown.getSelectedItem());
+                State.state().setDatabaseCurrent((String) DBChooser_DropDown.getSelectedItem());
                 changeTab(Tab.SQLEditor);
             });
         } catch (SQLException e) {

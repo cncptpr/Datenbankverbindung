@@ -2,11 +2,12 @@ package me.cncptpr.dbverbindung.core.dbconnection;
 
 
 import me.cncptpr.console.Console;
-import me.cncptpr.dbverbindung.Main;
-import me.cncptpr.dbverbindung.core.save.Config;
+import me.cncptpr.dbverbindung.core.State;
 
 import java.sql.*;
 import java.util.ArrayList;
+
+import static me.cncptpr.dbverbindung.core.State.state;
 
 public class DBConnection implements AutoCloseable {
 
@@ -36,9 +37,9 @@ public class DBConnection implements AutoCloseable {
     private final Connection connection;
 
     public DBConnection() throws SQLException {
-        Credentials credentials = Credentials.fromDefaultSettings();
-        String url = String.format("jdbc:mysql://%s/%s", credentials.ip, credentials.database);
-        connection = DriverManager.getConnection(url, credentials.username, credentials.password);
+        State state = state();
+        String url = String.format("jdbc:mysql://%s/%s", state.ip(), state.databaseCurrent());
+        connection = DriverManager.getConnection(url, state.username(), state.password());
     }
 
     public void close() {
@@ -63,16 +64,6 @@ public class DBConnection implements AutoCloseable {
         }
         result.close();
         return databases.toArray(new String[0]);
-    }
-
-    private record Credentials (String ip,String database,String username, String password) {
-
-        public static Credentials fromDefaultSettings () {
-            return fromSettings(Main.CONFIG);
-        }
-        public static Credentials fromSettings (Config settings) {
-            return new Credentials(settings.getString("ip"), settings.getString("database_current"), settings.getString("username"), settings.getString("password"));
-        }
     }
 }
 

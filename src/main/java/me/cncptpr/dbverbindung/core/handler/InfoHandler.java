@@ -1,8 +1,8 @@
 package me.cncptpr.dbverbindung.core.handler;
 
 import me.cncptpr.console.Console;
-import me.cncptpr.dbverbindung.Main;
 import me.cncptpr.dbverbindung.core.ColumnInfo;
+import me.cncptpr.dbverbindung.core.State;
 import me.cncptpr.dbverbindung.core.TableInfo;
 import me.cncptpr.dbverbindung.core.dbconnection.DBConnection;
 
@@ -40,7 +40,7 @@ public class InfoHandler {
 
 
     public static String[] getTableNames(DatabaseMetaData metaData) throws SQLException {
-        ResultSet tables = metaData.getTables(Main.CONFIG.getString("database_current"), null, "%", null);
+        ResultSet tables = metaData.getTables(State.state().databaseCurrent(), null, "%", null);
         LinkedList<String> tableNamesList = new LinkedList<>();
         while (tables.next()) {
             tableNamesList.add(tables.getString(3));
@@ -77,9 +77,9 @@ public class InfoHandler {
     }
 
     private static boolean isSameDatabaseAsBefore() {
-        if(Main.CONFIG.getString("database_current").equals(lastDatabase))
+        if(State.state().databaseCurrent().equals(lastDatabase))
             return true;
-        lastDatabase = Main.CONFIG.getString("database_current");
+        lastDatabase = State.state().databaseCurrent();
         return false;
     }
 

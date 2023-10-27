@@ -1,8 +1,8 @@
 package me.cncptpr.dbverbindung.core.handler;
 
 import me.cncptpr.console.Console;
-import me.cncptpr.dbverbindung.Main;
 import me.cncptpr.dbverbindung.core.HistoryEntrance;
+import me.cncptpr.dbverbindung.core.State;
 import me.cncptpr.dbverbindung.core.save.HistoryFile;
 
 import java.io.IOException;
@@ -16,11 +16,11 @@ public class HistoryHandler {
     private static final ArrayList<HistoryEntrance> items = new ArrayList<>();
 
     private static String previousHistory;
-    private static final Optional<HistoryFile> file = HistoryFile.newAsOptional(Main.HISTORY_DIR);
+    private static final Optional<HistoryFile> file = HistoryFile.newAsOptional(State.state().historyDir());
 
     static {
         try {
-            previousHistory = HistoryFile.readLastHistoryFile(Main.HISTORY_DIR);
+            previousHistory = HistoryFile.readLastHistoryFile(State.state().historyDir());
         } catch (IOException e) {
             Console.debug("Can't read last History File!");
             previousHistory = "";

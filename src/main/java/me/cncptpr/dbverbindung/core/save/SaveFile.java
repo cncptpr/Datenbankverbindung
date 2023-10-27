@@ -13,24 +13,16 @@ public class SaveFile {
     private final Path path;
     private final File file;
 
-    public SaveFile(String pathText) {
+    public SaveFile(String pathText) throws IOException {
         path = Path.of(pathText);
         file = new File(pathText);
-        checkFile();
-    }
-
-    private void checkFile() {
-        try {
-            boolean ignored = file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        boolean ignored = file.createNewFile();
     }
 
     public String read() {
         try {
             Console.debug("Reading\n");
-            return new String(Files.readAllBytes(path));
+            return Files.readString(path);
         } catch (IOException e) {
             e.printStackTrace();
         }

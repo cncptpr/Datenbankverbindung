@@ -3,7 +3,7 @@ package me.cncptpr.dbverbindung.core.events.loginEvent;
 import me.cncptpr.dbverbindung.core.events.defaults.EventHandler;
 import me.cncptpr.dbverbindung.core.events.defaults.Listener;
 
-import static me.cncptpr.dbverbindung.Main.CONFIG;
+import static me.cncptpr.dbverbindung.core.State.state;
 
 public class LoginEventHandler extends EventHandler<Listener<LoginEvent>, LoginEvent> {
 
@@ -12,9 +12,6 @@ public class LoginEventHandler extends EventHandler<Listener<LoginEvent>, LoginE
     }
 
     public void call() {
-        String username = CONFIG.getString("username");
-        String database = CONFIG.getString("database");
-        String ip = CONFIG.getString("ip");
-        call(username, database, ip);
+        call(state().username(), state().databaseCurrent(), state().ip());
     }
 }
