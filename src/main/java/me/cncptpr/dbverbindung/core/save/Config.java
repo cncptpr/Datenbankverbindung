@@ -4,10 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.cncptpr.console.Console;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Optional;
 
+
+/**
+ * A wrapper for the config file allowing to read from it and generate a default config file if empty or not created.
+ */
 public class Config {
     private Optional<SaveFile> file;
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -17,11 +23,15 @@ public class Config {
     private static final String IP = "ip";
     private static final String HISTORY_DIR = "history_dir";
 
+    private static final String PATH = "config.json";
+
     public Config() {
         try {
-            file = Optional.of(new SaveFile("config.json"));
+            file = Optional.of(new SaveFile(PATH));
         } catch (IOException e) {
             file = Optional.empty();
+            Path p = new File(PATH).toPath();
+            Console.error("#red Config File could not be accessed#r, using default config.\n\tFile Path: %s", p.toAbsolutePath().toString());
         }
         map = defaultSettings();
         load();
