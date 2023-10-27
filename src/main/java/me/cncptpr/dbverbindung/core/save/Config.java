@@ -13,9 +13,9 @@ public class Config {
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     HashMap<String, Object> map;
 
-    private static String DATABASE = "database";
-    private static String IP = "ip";
-    private static String HISTORY_DIR = "history_dir";
+    private static final String DATABASE = "database";
+    private static final String IP = "ip";
+    private static final String HISTORY_DIR = "history_dir";
 
     public Config() {
         try {
@@ -31,29 +31,12 @@ public class Config {
         return getString(IP);
     }
 
-    public void setIP(String ip) {
-        set(IP, ip);
-    }
-
     public String getHistoryDir() {
         return getString(HISTORY_DIR);
     }
 
-    public void setHistoryDir(String historyDir) {
-        set(HISTORY_DIR, historyDir);
-    }
-
     public String getDatabase() {
         return getString(DATABASE);
-    }
-
-    public void setDatabase(String database) {
-        set(DATABASE, database);
-    }
-
-    private void set(String key, Object value) {
-        map.put(key, value);
-        save();
     }
 
     private Object get(String key) {
