@@ -14,8 +14,6 @@ import me.cncptpr.dbverbindung.swingGUI.Window;
  */
 public class Main {
 
-    // TODO: 19.10.2023 Automatisch die CONFIG generieren und mit Werten aus UI ausfüllen.
-
     public static void main(String[] args) {
         State.from(new Config());
         Window ignored = new Window("TiTab SQL");
