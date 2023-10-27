@@ -131,6 +131,8 @@ public class HistoryFile {
      */
     public static Optional<HistoryFile> newAsOptional(String path) {
         try {
+            if (path.isEmpty())
+                throw new IOException("History Path needs to be set.");
             return Optional.of(new HistoryFile(path));
         } catch (IOException e) {
             Console.debug("Can't create new #red History File!\n");
